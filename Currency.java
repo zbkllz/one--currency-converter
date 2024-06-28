@@ -14,11 +14,13 @@ public class Currency {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(url)
-                    .build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response;
+            try (HttpClient client = HttpClient.newHttpClient()) {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(url)
+                        .build();
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            }
             CurrencyAPI conversionResult = gson.fromJson(response.body(), CurrencyAPI.class);
             return "Valor " + Amount + " [" + CoinFrom + "] corresponde ao valor final de =>> " + conversionResult.conversion_result() + "[" + CoinTo + "]";
         } catch (Exception e) {
